@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
-import android.util.Log;
 import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -21,9 +20,9 @@ public class AlertReceiver extends BroadcastReceiver {
         if(intent.getBooleanExtra("isBubbleAllowed",true)) {
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    context.startForegroundService(new Intent(context, FloatingViewService.class));
+                    context.startForegroundService(new Intent(context, athkarAlMasaaFloatingService.class));
                 } else {
-                    context.startService(new Intent(context, FloatingViewService.class));
+                    context.startService(new Intent(context, athkarAlMasaaFloatingService.class));
                 }
             } catch (Exception e) {
                 Toast.makeText(context.getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();

@@ -9,23 +9,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
-import android.nfc.Tag;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.transition.Scene;
-import android.transition.TransitionManager;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,10 +38,8 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
-public class FloatingViewService extends Service {
+public class athkarAlMasaaFloatingService extends Service {
 
     private boolean isLlShown = false;
     private CardView cardView;
@@ -66,7 +55,7 @@ public class FloatingViewService extends Service {
     private athkar_al_masaa_float_adapter.OnCountBtnClickListener countBtnClickListener ;
 
 
-    public FloatingViewService(){
+    public athkarAlMasaaFloatingService(){
         }
 
 
@@ -380,7 +369,7 @@ public class FloatingViewService extends Service {
                 }
             };
 
-            athkar_al_masaa_float_adapter = new athkar_al_masaa_float_adapter(athkar, FloatingViewService.this,countBtnClickListener);
+            athkar_al_masaa_float_adapter = new athkar_al_masaa_float_adapter(athkar, athkarAlMasaaFloatingService.this,countBtnClickListener);
             viewPager2.setAdapter(athkar_al_masaa_float_adapter);
             viewPager2.setClipToPadding(false);
             viewPager2.setClipChildren(false);
@@ -417,7 +406,7 @@ public class FloatingViewService extends Service {
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
 
-                Toast.makeText(FloatingViewService.this,loadAdError.getCode() + "",Toast.LENGTH_SHORT).show();
+                Toast.makeText(athkarAlMasaaFloatingService.this,loadAdError.getCode() + "",Toast.LENGTH_SHORT).show();
             }
 
             @Override

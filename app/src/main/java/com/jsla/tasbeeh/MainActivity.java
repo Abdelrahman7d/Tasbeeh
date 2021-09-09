@@ -517,11 +517,11 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
 
                     } else {
                         startService(new Intent(MainActivity.this,
-                                FloatingViewService.class));
+                                athkarAlMasaaFloatingService.class));
                     }
                 } else {
                     startService(new Intent(MainActivity.this,
-                            FloatingViewService.class));
+                            athkarAlMasaaFloatingService.class));
                 }
             }
         });
@@ -554,11 +554,11 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                         alert.show();
                     } else {
                         startService(new Intent(MainActivity.this,
-                                FloatingViewService.class));
+                                athkarAlMasaaFloatingService.class));
                     }
                 } else {
                     startService(new Intent(MainActivity.this,
-                            FloatingViewService.class));
+                            athkarAlMasaaFloatingService.class));
                 }
             }
         });
@@ -654,7 +654,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 1234 && Settings.canDrawOverlays(getApplicationContext())) {
-            startService(new Intent(MainActivity.this, FloatingViewService.class));
+            startService(new Intent(MainActivity.this, athkarAlMasaaFloatingService.class));
             allowFloatingServiceCv.setVisibility(View.GONE);
         } else if (requestCode == 1233 && Settings.canDrawOverlays(getApplicationContext())) {
             startService(new Intent(MainActivity.this, MasbahaFloatingService.class));
