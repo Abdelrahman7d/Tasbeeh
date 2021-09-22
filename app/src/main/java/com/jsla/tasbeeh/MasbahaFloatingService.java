@@ -71,7 +71,7 @@ public class MasbahaFloatingService extends Service {
 
         //Initialize finishAthkarTxt view
         finishAthkarTxt = new TextView(getApplicationContext());
-        finishAthkarTxt.setText("الإنتهاء من الأذكار");
+        finishAthkarTxt.setText("الإنتهاء من المسبحة");
         finishAthkarTxt.setTextSize(18);
         finishAthkarTxt.setGravity(Gravity.CENTER);
         finishAthkarTxt.setTextColor(Color.parseColor("#FFFFFF"));
@@ -104,7 +104,7 @@ public class MasbahaFloatingService extends Service {
 
         params.gravity = Gravity.TOP | Gravity.CENTER;
         params.x = 0;
-        params.y = mWindowManager.getDefaultDisplay().getHeight()/4;
+        params.y = 150;
 
         mWindowManager.addView(mFloatingView, params);
         /////////////////////////////////////////////////////////////////
@@ -161,7 +161,6 @@ public class MasbahaFloatingService extends Service {
                             }).start();
 
                         } else {
-                            params.x = 0;
                             mWindowManager.updateViewLayout(mFloatingView, params);
                         }
 
@@ -172,10 +171,12 @@ public class MasbahaFloatingService extends Service {
                         params.x = initialX + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
 
-                        if (params.y > finishAthkarParams.y / 0.135) {
+                        if (params.y > finishAthkarParams.y / 0.125) {
                             finishAthkarTxt.setBackgroundColor(Color.parseColor("#93FF0000"));
+                            mFloatingView.setAlpha(0.7f);
                         } else {
                             finishAthkarTxt.setBackgroundColor(Color.parseColor("#98444343"));
+                            mFloatingView.setAlpha(1);
                         }
 
                         //Update the layout with new X & Y coordinate

@@ -9,18 +9,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.provider.Settings;
 import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-public class AlertReceiver extends BroadcastReceiver {
+public class athkarAlMasaaReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
         if(intent.getBooleanExtra("isBubbleAllowed",true)) {
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    context.startForegroundService(new Intent(context, athkarAlMasaaFloatingService.class));
+                    if (!Settings.canDrawOverlays(context)){
+
+                    } else {
+                        context.startForegroundService(new Intent(context, athkarAlMasaaFloatingService.class));
+                    }
                 } else {
                     context.startService(new Intent(context, athkarAlMasaaFloatingService.class));
                 }
@@ -29,16 +34,17 @@ public class AlertReceiver extends BroadcastReceiver {
             }
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context.getApplicationContext());
-            String title = "Notification Title";
-            String message = "Notification Message";
+            String title = "أذكار المساء";
+            String message = "وَسَبِّحْ بِحَمْدِ رَبِّكَ قَبْلَ طُلُوعِ الشَّمْسِ وَقَبْلَ الْغُرُوبِ (39)\n";
 
             Intent activityIntent = new Intent(context.getApplicationContext(), Athkar_Al_Masaa.class);
             PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(),
-                    0, activityIntent, 0);
+                    2, activityIntent, 0);
+
             Intent broadcastIntent = new Intent(context.getApplicationContext(), NotificationReceiver.class);
 
-            PendingIntent actionIntent = PendingIntent.getBroadcast(context.getApplicationContext(),
-                    0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//            PendingIntent actionIntent = PendingIntent.getBroadcast(context.getApplicationContext(),
+//                    0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             Notification notification = new NotificationCompat.Builder(context.getApplicationContext(), CHANNEL_1_ID)
                     .setSmallIcon(R.drawable.ic_home)
@@ -50,7 +56,7 @@ public class AlertReceiver extends BroadcastReceiver {
                     .setContentIntent(contentIntent)
                     .setAutoCancel(true)
                     .setSilent(false)
-                    .addAction(R.mipmap.ic_launcher, "Toast", actionIntent)
+//                    .addAction(R.mipmap.ic_launcher, "Toast", actionIntent)
                     .build();
             notificationManager.notify(1, notification);
         }

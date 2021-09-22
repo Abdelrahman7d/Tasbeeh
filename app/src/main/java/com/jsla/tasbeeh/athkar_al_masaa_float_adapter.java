@@ -20,7 +20,8 @@ public class athkar_al_masaa_float_adapter extends RecyclerView.Adapter<athkar_a
 
     private ArrayList<Theker> athkar;
     private Context context;
-    private athkar_al_masaa_float_adapter.OnCountBtnClickListener countBtnClickListener  ;
+    private athkar_al_masaa_float_adapter.OnCountBtnClickListener countBtnClickListener;
+    private boolean isItMasaa;
 
     public ArrayList<Theker> getAthkar() {
         return athkar;
@@ -30,17 +31,23 @@ public class athkar_al_masaa_float_adapter extends RecyclerView.Adapter<athkar_a
         void onDeleteItem(athkar_al_masaa_float_adapter athkarAlMasaaFloatAdapter, int position);
     }
 
-    public athkar_al_masaa_float_adapter(ArrayList<Theker> athkar, Context context, OnCountBtnClickListener countBtnClickListener) {
+    public athkar_al_masaa_float_adapter(ArrayList<Theker> athkar, Context context, OnCountBtnClickListener countBtnClickListener, boolean isItMasaa) {
         this.athkar = athkar;
         this.context = context;
         this.countBtnClickListener = countBtnClickListener;
+        this.isItMasaa = isItMasaa;
     }
 
     @NonNull
     @Override
     public thker_masaa_float_holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.theker_masaa_float_holder, parent, false);
-        return new thker_masaa_float_holder(view);
+       if (isItMasaa) {
+            View view = LayoutInflater.from(context).inflate(R.layout.theker_masaa_float_holder, parent, false);
+            return new thker_masaa_float_holder(view);
+        } else {
+           View view = LayoutInflater.from(context).inflate(R.layout.theker_sabaah_float_holder, parent, false);
+           return new thker_masaa_float_holder(view);
+       }
     }
 
     @Override
@@ -83,11 +90,6 @@ public class athkar_al_masaa_float_adapter extends RecyclerView.Adapter<athkar_a
                 }
             });
         }
-
-            public String decreaseCounter () {
-                athkar.get(getAdapterPosition()).setCounter(athkar.get(getAdapterPosition()).getCounter() - 1);
-                return "" + athkar.get(getAdapterPosition()).getCounter();
-            }
         }
 
     }

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.jsla.tasbeeh">
 
-<!--    <uses-permission android:name="android.permissionsion.INTERNET" />-->
+    <uses-permission android:name="android.permissionsion.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -20,12 +20,26 @@
 
         <receiver android:name=".NotificationReceiver"/>
 
-        <receiver android:name=".AlertReceiver"
+        <receiver android:name=".athkarAlMasaaReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.ACTION_LOCKED_BOOT_COMPLETED"/>
                 <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </receiver>
+
+
+        <receiver android:name=".athkarAlSabaahReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.ACTION_LOCKED_BOOT_COMPLETED"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </receiver>
 
@@ -34,7 +48,9 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.ACTION_LOCKED_BOOT_COMPLETED"/>
                 <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </receiver>
 
@@ -49,6 +65,15 @@
 
         <service
             android:name=".MasbahaFloatingService"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="mediaProjection"
+            android:stopWithTask="false"
+            tools:targetApi="q"
+            android:screenOrientation="portrait"/>
+
+        <service
+            android:name=".athkarSabaahFloatingService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="mediaProjection"

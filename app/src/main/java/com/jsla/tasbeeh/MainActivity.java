@@ -24,6 +24,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.View;
@@ -62,25 +63,25 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
     private CardView allowFloatingServiceCv;
     private ConstraintLayout masbaha_act,main_act,more_act,setting_act;
     private AdView mAdView;
-    private Button increase_counter_btn,zero_counter_btn,testNotificationBtn,
+    private Button increase_counter_btn,zero_counter_btn,
             allowFloatingServiceBtn;
-    private TextView counter_txt_view,theker_text_view,athkarAlSabahTimeTxtView,athkarAlMasaaTimeTxtView;
+    private TextView counter_txt_view,theker_text_view,athkarAlSabahTimeTxtView,athkarAlMasaaTimeTxtView,ayahTextView;
     private Switch isBubbleAllowedSwitch,isNotificationAllowedSwitch,showMasbahaSwitch;
 
-    private boolean isBubbleAllowed = true,isNotificationAllowed = true, showMasbaha = true,
+    private boolean isBubbleAllowed =  false,isNotificationAllowed = true, showMasbaha = false,
                     isFirstTime = true;
     private String athkarAlSabaahTime = "",athkarAlMasaaTime = "";
     private SharedPreferences sharedPreferences;
     private int masbahaRepeatTime = 4,impressionsLevel = 0;
 
-    private Spinner impressionsLevelSpinner,masbahaRepeatTimeSpinner;
+    private Spinner impressionsLevelSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        testNotificationBtn = findViewById(R.id.testNotificationBtn);
+        ayahTextView = findViewById(R.id.ayahTextView);
         button1 = findViewById(R.id.go_to_athkar_al_sabaah_btn);
         button2 = findViewById(R.id.go_to_athkar_al_masaa_btn);
         button3 = findViewById(R.id.go_to_athkar_al_salaah_btn);
@@ -113,52 +114,54 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         allowFloatingServiceCv = findViewById(R.id.allowFloatingServiceCv);
         allowFloatingServiceBtn = findViewById(R.id.allowFloatingServiceBtn);
         impressionsLevelSpinner = findViewById(R.id.impressionsLevelSpinner);
-        masbahaRepeatTimeSpinner = findViewById(R.id.masbahaRepeatTimeSpinner);
         showMasbahaLl = findViewById(R.id.showMasbahaLl);
 
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        testNotificationBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String title = "Notification Title";
-                String message = "Notification Message";
-
-                Intent activityIntent = new Intent(getApplicationContext(), Athkar_Al_Masaa.class);
-                PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(),
-                        0, activityIntent, 0);
-                Intent broadcastIntent = new Intent(getApplicationContext(), NotificationReceiver.class);
-
-                PendingIntent actionIntent = PendingIntent.getBroadcast(getApplicationContext(),
-                        0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                Notification notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_1_ID)
-                        .setSmallIcon(R.drawable.ic_home)
-                        .setContentTitle(title)
-                        .setContentText(message)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                        .setColor(Color.RED)
-                        .setContentIntent(contentIntent)
-                        .setAutoCancel(true)
-                        .addAction(R.mipmap.ic_launcher, "Toast", actionIntent)
-                        .build();
-                notificationManager.notify(1, notification);
-
-            }
-        });
-
         if(Build.VERSION.SDK_INT >= 23){
-            if (!Settings.canDrawOverlays(getApplicationContext())){
-                allowFloatingServiceCv.setVisibility(View.VISIBLE);
+            if (Settings.canDrawOverlays(getApplicationContext())){
+                allowFloatingServiceCv.setVisibility(View.GONE);
             }
         }
+
+        ayahTextView.setY(ayahTextView.getY() + 70);
+        ayahTextView.setAlpha(0);
+
+        for(int i = 0; i < 3; i++){
+
+            switch (i){
+                case 0:
+                    ayahTextView.setText("إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ ۚ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا (56)");
+                    break;
+
+                case 1:
+                    ayahTextView.setText("وَالذَّاكِرِينَ اللَّهَ كَثِيرًا وَالذَّاكِرَاتِ أَعَدَّ اللَّهُ لَهُم مَّغْفِرَةً وَأَجْرًا عَظِيمًا (35)");
+                    break;
+
+                case 2:
+                    ayahTextView.setText("الَّذِينَ آمَنُوا وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ اللَّهِ ۗ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ (28)");
+                    break;
+            }
+
+            ayahTextView.animate().y(ayahTextView.getY() + 30).alpha(1).setDuration(700).withEndAction(new Runnable() {
+                @Override
+                public void run() {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            ayahTextView.animate().y(ayahTextView.getY() + 30).alpha(0).setDuration(700).start();
+                            ayahTextView.setY(ayahTextView.getY() - 130);
+                        }
+                    }, 3000);
+                }
+            }).start();
+
+        }
+
         allowFloatingServiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, 1234);
+                startActivityForResult(intent, 1236);
             }
         });
         button1.setOnClickListener(new View.OnClickListener() {
@@ -416,28 +419,106 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         masbahaRepeatTime = sharedPreferences.getInt("masbahaRepeatTime",masbahaRepeatTime);
         impressionsLevel = sharedPreferences.getInt("impressionsLevel",impressionsLevel);
 
+        isBubbleAllowedSwitch.setChecked(isBubbleAllowed);
+        isNotificationAllowedSwitch.setChecked(isNotificationAllowed);
+        showMasbahaSwitch.setChecked(showMasbaha);
+        athkarAlMasaaTimeTxtView.setText(athkarAlMasaaTime);
+        athkarAlSabahTimeTxtView.setText(athkarAlSabaahTime);
+        impressionsLevelSpinner.setSelection(impressionsLevel);
+
         isBubbleAllowedSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                isBubbleAllowed = isChecked;
-                sharedPreferences.edit().putBoolean("isBubbleAllowed",isBubbleAllowed).apply();
 
-                if (isChecked){
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(Calendar.getInstance().getTime());
+                if (Build.VERSION.SDK_INT >= 23 && isChecked) {
+                    if (!Settings.canDrawOverlays(getApplicationContext())) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setMessage("لتتمكن من اظهار الفقاعة الرجاء السماح للتطبيق بالظهور فوق التطبيقات")
+                                .setTitle("لا يمكنك اظهار الفقاعة!");
 
-                    calendar.set(Calendar.HOUR_OF_DAY, 17);
-                    calendar.set(Calendar.MINUTE, 0);
-                    calendar.set(Calendar.SECOND, 0);
-                    athkarAlMasaaTime = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.getTime());
-                    athkarAlMasaaTimeTxtView.setText(athkarAlMasaaTime);
-                    sharedPreferences.edit().putString("athkarAlMasaaTime",athkarAlMasaaTime).apply();
+                        builder.setCancelable(false)
+                                .setPositiveButton("السماح", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                                Uri.parse("package:" + getPackageName()));
+                                        startActivityForResult(intent, 1237);
+                                    }
+                                })
+                                .setNegativeButton("لاحقا", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        isBubbleAllowedSwitch.setChecked(false);
+                                        dialog.cancel();
+                                    }
+                                });
 
-                    startAlarm(calendar);
+                        AlertDialog alert = builder.create();
+                        alert.show();
 
+                    } else {
+
+                        isBubbleAllowed = isChecked;
+                        sharedPreferences.edit().putBoolean("isBubbleAllowed",isBubbleAllowed).apply();
+
+                        if (isChecked){
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(Calendar.getInstance().getTime());
+
+                            calendar.set(Calendar.HOUR_OF_DAY, 17);
+                            calendar.set(Calendar.MINUTE, 0);
+                            calendar.set(Calendar.SECOND, 0);
+                            athkarAlMasaaTime = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.getTime());
+                            athkarAlMasaaTimeTxtView.setText(athkarAlMasaaTime);
+                            sharedPreferences.edit().putString("athkarAlMasaaTime",athkarAlMasaaTime).apply();
+
+                            startAlarm(calendar,true);
+
+                            calendar.set(Calendar.HOUR_OF_DAY, 5);
+                            calendar.set(Calendar.MINUTE, 0);
+                            calendar.set(Calendar.SECOND, 0);
+                            athkarAlSabaahTime = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.getTime());
+                            athkarAlSabahTimeTxtView.setText(athkarAlSabaahTime);
+                            sharedPreferences.edit().putString("athkarAlSabaahTime",athkarAlSabaahTime).apply();
+
+                            startAlarm(calendar, false);
+
+                        } else {
+                            cancelAlarm(1);
+                            cancelAlarm(2);
+                        }
+                    }
                 } else {
-                    cancelAlarm(1);
+
+                    isBubbleAllowed = isChecked;
+                    sharedPreferences.edit().putBoolean("isBubbleAllowed",isBubbleAllowed).apply();
+
+                    if (isChecked){
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(Calendar.getInstance().getTime());
+
+                        calendar.set(Calendar.HOUR_OF_DAY, 17);
+                        calendar.set(Calendar.MINUTE, 0);
+                        calendar.set(Calendar.SECOND, 0);
+                        athkarAlMasaaTime = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.getTime());
+                        athkarAlMasaaTimeTxtView.setText(athkarAlMasaaTime);
+                        sharedPreferences.edit().putString("athkarAlMasaaTime",athkarAlMasaaTime).apply();
+
+                        startAlarm(calendar,true);
+
+                        calendar.set(Calendar.HOUR_OF_DAY, 5);
+                        calendar.set(Calendar.MINUTE, 0);
+                        calendar.set(Calendar.SECOND, 0);
+                        athkarAlSabaahTime = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.getTime());
+                        athkarAlSabahTimeTxtView.setText(athkarAlSabaahTime);
+                        sharedPreferences.edit().putString("athkarAlSabaahTime",athkarAlSabaahTime).apply();
+
+                        startAlarm(calendar, false);
+
+                    } else {
+                        cancelAlarm(1);
+                        cancelAlarm(2);
+                    }
                 }
+
             }
         });
 
@@ -452,21 +533,68 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         showMasbahaSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                showMasbaha = isChecked;
-                sharedPreferences.edit().putBoolean("showMasbaha",showMasbaha).apply();
 
-                if (isChecked){
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(Calendar.getInstance().getTime());
+                if (Build.VERSION.SDK_INT >= 23 && isChecked) {
+                    if (!Settings.canDrawOverlays(getApplicationContext())) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setMessage("لتتمكن من اظهار المسبحة الرجاء السماح للتطبيق بالظهور فوق التطبيقات")
+                                .setTitle("لا يمكنك اظهار المسبحة!");
 
-                    calendar.set(Calendar.HOUR_OF_DAY, Calendar.getInstance().getTime().getHours());
-                    calendar.set(Calendar.MINUTE, Calendar.getInstance().getTime().getMinutes() + 1);
-                    calendar.set(Calendar.SECOND, 0);
+                        builder.setCancelable(false)
+                                .setPositiveButton("السماح", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                                Uri.parse("package:" + getPackageName()));
+                                        startActivityForResult(intent, 1238);
+                                    }
+                                })
+                                .setNegativeButton("لاحقا", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        showMasbahaSwitch.setChecked(false);
+                                        dialog.cancel();
+                                    }
+                                });
 
-                    startAlarm(calendar,impressionsLevel);
+                        AlertDialog alert = builder.create();
+                        alert.show();
 
+                    } else {
+
+                        showMasbaha = isChecked;
+                        sharedPreferences.edit().putBoolean("showMasbaha",showMasbaha).apply();
+
+                        if (isChecked){
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(Calendar.getInstance().getTime());
+
+                            calendar.set(Calendar.HOUR_OF_DAY, Calendar.getInstance().getTime().getHours());
+                            calendar.set(Calendar.MINUTE, Calendar.getInstance().getTime().getMinutes() + 1);
+                            calendar.set(Calendar.SECOND, 0);
+
+                            startAlarm(calendar,impressionsLevel);
+
+                        } else {
+                            cancelAlarm(0);
+                        }
+                    }
                 } else {
-                    cancelAlarm(0);
+
+                    showMasbaha = isChecked;
+                    sharedPreferences.edit().putBoolean("showMasbaha",showMasbaha).apply();
+
+                    if (isChecked){
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(Calendar.getInstance().getTime());
+
+                        calendar.set(Calendar.HOUR_OF_DAY, Calendar.getInstance().getTime().getHours());
+                        calendar.set(Calendar.MINUTE, Calendar.getInstance().getTime().getMinutes() + 1);
+                        calendar.set(Calendar.SECOND, 0);
+
+                        startAlarm(calendar,impressionsLevel);
+
+                    } else {
+                        cancelAlarm(0);
+                    }
                 }
             }
         });
@@ -474,18 +602,73 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         athkarAlSabahTimeTxtView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            DialogFragment timePicker = new timePicker();
-            timePicker.show(getSupportFragmentManager(), "athkarAlSabaahTime picker");
-            athkarAlSabaahTime = "";
+                if (isBubbleAllowed){
+                    DialogFragment timePicker = new timePicker();
+                    timePicker.show(getSupportFragmentManager(), "athkarAlSabaahTime picker");
+                    athkarAlSabaahTime = "";
+
+                } else  {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage("لتتمكن من اظهار الفقاعة الرجاء تفعيل خيار فقاعة الأذكار")
+                            .setTitle("فقاعة الأذكار غير مفعلة!");
+
+                    builder.setCancelable(false)
+                            .setPositiveButton("تفعيل", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    isBubbleAllowed = true;
+                                    sharedPreferences.edit().putBoolean("isBubbleAllowed",isBubbleAllowed).apply();
+                                    isBubbleAllowedSwitch.setChecked(isBubbleAllowed);
+                                }
+                            })
+                            .setNegativeButton("لاحقا", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                    dialog.cancel();
+                                }
+                            });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                }
             }
         });
 
         athkarAlMasaaTimeTxtView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogFragment timePicker = new timePicker();
-                timePicker.show(getSupportFragmentManager(), "athkarAlMasaaTime picker");
-                athkarAlMasaaTime = "";
+
+                if (isBubbleAllowed){
+                    DialogFragment timePicker = new timePicker();
+                    timePicker.show(getSupportFragmentManager(), "athkarAlMasaaTime picker");
+                    athkarAlMasaaTime = "";
+
+                } else  {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage("لتتمكن من اظهار الفقاعة الرجاء تفعيل خيار فقاعة الأذكار")
+                            .setTitle("فقاعة الأذكار غير مفعلة!");
+
+                    builder.setCancelable(false)
+                            .setPositiveButton("تفعيل", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    isBubbleAllowed = true;
+                                    sharedPreferences.edit().putBoolean("isBubbleAllowed",isBubbleAllowed).apply();
+                                    isBubbleAllowedSwitch.setChecked(isBubbleAllowed);
+                                }
+                            })
+                            .setNegativeButton("لاحقا", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                    dialog.cancel();
+                                }
+                            });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                }
             }
         });
 
@@ -503,7 +686,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                                     public void onClick(DialogInterface dialog, int id) {
                                         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                                 Uri.parse("package:" + getPackageName()));
-                                        startActivityForResult(intent, 1234);
+                                        startActivityForResult(intent, 1235);
                                     }
                                 })
                                 .setNegativeButton("لاحقا", new DialogInterface.OnClickListener() {
@@ -517,11 +700,11 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
 
                     } else {
                         startService(new Intent(MainActivity.this,
-                                athkarAlMasaaFloatingService.class));
+                                athkarSabaahFloatingService.class));
                     }
                 } else {
                     startService(new Intent(MainActivity.this,
-                            athkarAlMasaaFloatingService.class));
+                            athkarSabaahFloatingService.class));
                 }
             }
         });
@@ -616,36 +799,6 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             }
         });
 
-        masbahaRepeatTimeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                masbahaRepeatTime = position;
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("masbahaRepeatTime", masbahaRepeatTime);
-                editor.apply();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        isBubbleAllowedSwitch.setChecked(isBubbleAllowed);
-        isNotificationAllowedSwitch.setChecked(isNotificationAllowed);
-        showMasbahaSwitch.setChecked(showMasbaha);
-        athkarAlMasaaTimeTxtView.setText(athkarAlMasaaTime);
-        athkarAlSabahTimeTxtView.setText(athkarAlSabaahTime);
-        impressionsLevelSpinner.setSelection(impressionsLevel);
-        masbahaRepeatTimeSpinner.setSelection(masbahaRepeatTime);
-
-
-        if (isFirstTime){
-            isFirstTime = false;
-            sharedPreferences.edit().putBoolean("isFirstTime",isFirstTime).apply();
-            setFirstTime();
-        }
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -653,12 +806,41 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1234 && Settings.canDrawOverlays(getApplicationContext())) {
-            startService(new Intent(MainActivity.this, athkarAlMasaaFloatingService.class));
+        if (Settings.canDrawOverlays(getApplicationContext())){
+
+            setFirstTime();
+
+            isBubbleAllowed = true;
+            sharedPreferences.edit().putBoolean("isBubbleAllowed",isBubbleAllowed).apply();
+            isBubbleAllowedSwitch.setChecked(isBubbleAllowed);
+
+            showMasbaha = true;
+            sharedPreferences.edit().putBoolean("showMasbaha",showMasbaha).apply();
+            showMasbahaSwitch.setChecked(showMasbaha);
+
+            if (requestCode == 1234) {
+                startService(new Intent(MainActivity.this, athkarAlMasaaFloatingService.class));
+            } else if (requestCode == 1233) {
+                startService(new Intent(MainActivity.this, MasbahaFloatingService.class));
+            } else if (requestCode == 1235) {
+                startService(new Intent(MainActivity.this, athkarSabaahFloatingService.class));
+            }
+
+
             allowFloatingServiceCv.setVisibility(View.GONE);
-        } else if (requestCode == 1233 && Settings.canDrawOverlays(getApplicationContext())) {
-            startService(new Intent(MainActivity.this, MasbahaFloatingService.class));
-            allowFloatingServiceCv.setVisibility(View.GONE);
+        } else {
+
+            if (requestCode == 1237) {
+
+                isBubbleAllowed = false;
+                sharedPreferences.edit().putBoolean("isBubbleAllowed",isBubbleAllowed).apply();
+                isBubbleAllowedSwitch.setChecked(isBubbleAllowed);
+            } else if (requestCode == 1238) {
+
+                showMasbaha = false;
+                sharedPreferences.edit().putBoolean("showMasbaha",showMasbaha).apply();
+                showMasbahaSwitch.setChecked(showMasbaha);
+            }
         }
     }
 
@@ -675,14 +857,14 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             athkarAlSabaahTime = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.getTime());
             sharedPreferences.edit().putString("athkarAlSabaahTime",athkarAlSabaahTime).apply();
             athkarAlSabahTimeTxtView.setText(athkarAlSabaahTime);
-            startAlarm(calendar);
+            startAlarm(calendar,false);
 
         } else if (athkarAlMasaaTime.matches("")){
 
             athkarAlMasaaTime = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.getTime());
             sharedPreferences.edit().putString("athkarAlMasaaTime",athkarAlMasaaTime).apply();
             athkarAlMasaaTimeTxtView.setText(athkarAlMasaaTime);
-            startAlarm(calendar);
+            startAlarm(calendar,true);
         }
 
     }
@@ -705,22 +887,38 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         athkarAlMasaaTimeTxtView.setText(athkarAlMasaaTime);
         sharedPreferences.edit().putString("athkarAlMasaaTime",athkarAlMasaaTime).apply();
 
-        startAlarm(calendar);
+        startAlarm(calendar,true);
+
+        calendar.set(Calendar.HOUR_OF_DAY, 5);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        athkarAlSabaahTime = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.getTime());
+        athkarAlSabahTimeTxtView.setText(athkarAlSabaahTime);
+        sharedPreferences.edit().putString("athkarAlSabaahTime",athkarAlSabaahTime).apply();
+
+        startAlarm(calendar, false);
 
     }
 
-    private void startAlarm(Calendar calendar) {
-
-        Intent intent = new Intent(this, AlertReceiver.class);
+    private void startAlarm(Calendar calendar,boolean isItMasaa) {
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+
+        PendingIntent pendingIntent;
+        if (isItMasaa){
+            Intent intent = new Intent(this, athkarAlMasaaReceiver.class);
+            pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+        } else {
+            Intent intent = new Intent(this, athkarAlSabaahReceiver.class);
+            pendingIntent = PendingIntent.getBroadcast(this, 2, intent, 0);
+        }
 
         if (calendar.before(Calendar.getInstance())) {
             calendar.add(Calendar.DATE, 1);
         }
 
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        long interval = 24 * 60 * 60 * 1000 ;
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), interval, pendingIntent);
     }
 
     private void startAlarm(Calendar calendar,int level) {
@@ -736,30 +934,29 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
 
         long interval;
         if (level == 0){
-           interval = (24 * 60 * 1000) / 24;
+           interval = (24 * 60 * 60 * 1000) / 20;
         } else if (level == 1) {
-            interval = (24 * 60 * 1000) / 15;
+            interval = (24 * 60 * 60 * 1000) / 12;
         } else
-            interval = (24 * 60 * 1000) / 10;
+            interval = (24 * 60 * 60 * 1000) / 6;
 
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), interval, pendingIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), interval, pendingIntent);
     }
 
     private void cancelAlarm(int request) {
 
-        if (request == 0){
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            Intent intent = new Intent(this, masbahaReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent;
 
-            alarmManager.cancel(pendingIntent);
-        } else if (request == 1){
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            Intent intent = new Intent(this, AlertReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (request == 0)
+            intent = new Intent(this, masbahaReceiver.class);
+        else if (request == 1)
+            intent = new Intent(this, athkarAlMasaaReceiver.class);
+        else
+            intent = new Intent(this, athkarAlSabaahReceiver.class);
 
-            alarmManager.cancel(pendingIntent);
-        }
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, request, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(pendingIntent);
     }
 
 }

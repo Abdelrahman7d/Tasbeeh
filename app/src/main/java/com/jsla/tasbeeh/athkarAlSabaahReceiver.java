@@ -15,32 +15,32 @@ import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-public class masbahaReceiver extends BroadcastReceiver {
+public class athkarAlSabaahReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        if(intent.getBooleanExtra("showMasbaha",true)) {
+        if(intent.getBooleanExtra("isBubbleAllowed",true)) {
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     if (!Settings.canDrawOverlays(context)){
 
                     } else {
-                        context.startForegroundService(new Intent(context, MasbahaFloatingService.class));
+                        context.startForegroundService(new Intent(context, athkarSabaahFloatingService.class));
                     }
                 } else {
-                    context.startService(new Intent(context, MasbahaFloatingService.class));
+                    context.startService(new Intent(context, athkarSabaahFloatingService.class));
                 }
             } catch (Exception e) {
                 Toast.makeText(context.getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
             }
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context.getApplicationContext());
-            String title = "المسبحة";
-            String message = "اللهم صل على سيدنا محمد";
+            String title = "أذكار الصباح";
+            String message = "وَسَبِّحْ بِحَمْدِ رَبِّكَ قَبْلَ طُلُوعِ الشَّمْسِ وَقَبْلَ الْغُرُوبِ (39)\n";
 
-            Intent activityIntent = new Intent(context.getApplicationContext(), MainActivity.class);
+            Intent activityIntent = new Intent(context.getApplicationContext(), Athkar_Al_Sabaah.class);
             PendingIntent contentIntent = PendingIntent.getActivity(context.getApplicationContext(),
-                    0, activityIntent, 0);
+                    1, activityIntent, 0);
 
             Intent broadcastIntent = new Intent(context.getApplicationContext(), NotificationReceiver.class);
 
