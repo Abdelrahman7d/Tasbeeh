@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             @Override
             public void onClick(View v) {
 
-                loadInterstitialAd(1);
                 startActivity(new Intent(MainActivity.this, Athkar_Al_Sabaah.class));
             }
         });
@@ -148,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             @Override
             public void onClick(View v) {
 
-                loadInterstitialAd(1);
                 startActivity(new Intent(MainActivity.this, Athkar_Al_Masaa.class));
             }
         });
@@ -157,7 +155,6 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             @Override
             public void onClick(View v) {
 
-                loadInterstitialAd(1);
                 startActivity(new Intent(MainActivity.this, Athkar_Al_Salaah.class));
             }
         });
@@ -166,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             @Override
             public void onClick(View v) {
 
-                loadInterstitialAd(1);
                 startActivity(new Intent(MainActivity.this, Athkar_Al_Noom.class));
             }
         });
@@ -1017,14 +1013,6 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         });
 
         canShowAds = false;
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                canShowAds = true;
-            }
-        },15000);
-
     }
 
     private void getIntents(){

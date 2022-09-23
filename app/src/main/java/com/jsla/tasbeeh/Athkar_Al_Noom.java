@@ -3,7 +3,6 @@ package com.jsla.tasbeeh;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
