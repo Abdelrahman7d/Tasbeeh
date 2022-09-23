@@ -1,19 +1,13 @@
 package com.jsla.tasbeeh;
 
-import static com.jsla.tasbeeh.App.CHANNEL_1_ID;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.DialogFragment;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -40,27 +34,27 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Random;
 
+import helperClasses.AdsManager;
+
 public class MainActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener{
 
     private LinearLayout button1, button2, button3, button4,
                          home_btn,masbaha_btn,moreApps_btn,setting_btn,
-                         share_app_btn,google_play_btn,contactUs_btn,rate_app_btn,donate_dev_btn,
+                         share_app_btn,google_play_btn,contactUs_btn,rate_app_btn,contactUsWhatsapp_btn,
                          showAthkarAlSabahBubbleLl,showAthkarAlMasaaBubbleLl,
-                         showMasbahaLl;
-    private CardView allowFloatingServiceCv;
+                         showMasbahaLl,allowFloatingServiceLl;
+
     private ConstraintLayout masbaha_act,main_act,more_act,setting_act;
     private AdView mAdView;
     private Button increase_counter_btn,zero_counter_btn,
@@ -69,12 +63,15 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
     private Switch isBubbleAllowedSwitch,isNotificationAllowedSwitch,showMasbahaSwitch;
 
     private boolean isBubbleAllowed =  false,isNotificationAllowed = true, showMasbaha = false,
-                    isFirstTime = true;
+                    isFirstTime = true,canShowAds = true;
     private String athkarAlSabaahTime = "",athkarAlMasaaTime = "";
     private SharedPreferences sharedPreferences;
     private int masbahaRepeatTime = 4,impressionsLevel = 0;
 
     private Spinner impressionsLevelSpinner;
+
+    private InterstitialAd mInterstitialAd[];
+    private static AppOpenManager appOpenManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         google_play_btn = findViewById(R.id.more_apps_btn);
         contactUs_btn = findViewById(R.id.contactUs_btn);
         rate_app_btn = findViewById(R.id.rate_app_btn);
-        donate_dev_btn = findViewById(R.id.donate_dev_btn);
+        contactUsWhatsapp_btn = findViewById(R.id.contactUsWhatsapp_btn);
         isBubbleAllowedSwitch = findViewById(R.id.isBubbleAllowedSwitch);
         isNotificationAllowedSwitch = findViewById(R.id.isNotificationAllowedSwitch);
         showMasbahaSwitch = findViewById(R.id.showMasbahaSwitch);
@@ -111,54 +108,28 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         athkarAlMasaaTimeTxtView = findViewById(R.id.athkarAlMasaaTimeTxtView);
         showAthkarAlSabahBubbleLl = findViewById(R.id.showAthkarAlSabahBubbleLl);
         showAthkarAlMasaaBubbleLl = findViewById(R.id.showAthkarAlMasaaBubbleLl);
-        allowFloatingServiceCv = findViewById(R.id.allowFloatingServiceCv);
+        allowFloatingServiceLl = findViewById(R.id.allowFloatingServiceLl);
         allowFloatingServiceBtn = findViewById(R.id.allowFloatingServiceBtn);
         impressionsLevelSpinner = findViewById(R.id.impressionsLevelSpinner);
         showMasbahaLl = findViewById(R.id.showMasbahaLl);
 
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            appOpenManager = new AppOpenManager(this);
+        }
+
+
         if(Build.VERSION.SDK_INT >= 23){
             if (Settings.canDrawOverlays(getApplicationContext())){
-                allowFloatingServiceCv.setVisibility(View.GONE);
+                allowFloatingServiceLl.setVisibility(View.GONE);
             }
         }
 
-        ayahTextView.setY(ayahTextView.getY() + 70);
-        ayahTextView.setAlpha(0);
-
-        for(int i = 0; i < 3; i++){
-
-            switch (i){
-                case 0:
-                    ayahTextView.setText("إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ ۚ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا (56)");
-                    break;
-
-                case 1:
-                    ayahTextView.setText("وَالذَّاكِرِينَ اللَّهَ كَثِيرًا وَالذَّاكِرَاتِ أَعَدَّ اللَّهُ لَهُم مَّغْفِرَةً وَأَجْرًا عَظِيمًا (35)");
-                    break;
-
-                case 2:
-                    ayahTextView.setText("الَّذِينَ آمَنُوا وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ اللَّهِ ۗ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ (28)");
-                    break;
-            }
-
-            ayahTextView.animate().y(ayahTextView.getY() + 30).alpha(1).setDuration(700).withEndAction(new Runnable() {
-                @Override
-                public void run() {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            ayahTextView.animate().y(ayahTextView.getY() + 30).alpha(0).setDuration(700).start();
-                            ayahTextView.setY(ayahTextView.getY() - 130);
-                        }
-                    }, 3000);
-                }
-            }).start();
-
-        }
 
         allowFloatingServiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + getPackageName()));
                 startActivityForResult(intent, 1236);
@@ -167,6 +138,8 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                loadInterstitialAd(1);
                 startActivity(new Intent(MainActivity.this, Athkar_Al_Sabaah.class));
             }
         });
@@ -174,6 +147,8 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                loadInterstitialAd(1);
                 startActivity(new Intent(MainActivity.this, Athkar_Al_Masaa.class));
             }
         });
@@ -181,6 +156,8 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                loadInterstitialAd(1);
                 startActivity(new Intent(MainActivity.this, Athkar_Al_Salaah.class));
             }
         });
@@ -188,6 +165,8 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         button4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                loadInterstitialAd(1);
                 startActivity(new Intent(MainActivity.this, Athkar_Al_Noom.class));
             }
         });
@@ -197,10 +176,11 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             @Override
             public void onClick(View v) {
 
+                loadInterstitialAd(0);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     Window window = getWindow();
                     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                    window.setStatusBarColor(Color.parseColor("#936ED3"));
+                    window.setStatusBarColor(Color.parseColor("#673AB7"));
                 }
 
                 masbaha_act.setVisibility(View.GONE);
@@ -215,10 +195,11 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             @Override
             public void onClick(View v) {
 
+                loadInterstitialAd(0);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     Window window = getWindow();
                     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                    window.setStatusBarColor(Color.parseColor("#5EA9E6"));
+                    window.setStatusBarColor(getResources().getColor(R.color.purple_500));
                 }
 
                 main_act.setVisibility(View.GONE);
@@ -233,10 +214,11 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             @Override
             public void onClick(View v) {
 
+                loadInterstitialAd(0);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     Window window = getWindow();
                     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                    window.setStatusBarColor(Color.parseColor("#F56258"));
+                    window.setStatusBarColor(Color.parseColor("#F44336"));
                 }
                 main_act.setVisibility(View.GONE);
                 masbaha_act.setVisibility(View.GONE);
@@ -249,10 +231,12 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         setting_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                loadInterstitialAd(0);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     Window window = getWindow();
                     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                    window.setStatusBarColor(Color.parseColor("#5C5C5C"));
+                    window.setStatusBarColor(Color.parseColor("#3D3D3D"));
                 }
                 main_act.setVisibility(View.GONE);
                 masbaha_act.setVisibility(View.GONE);
@@ -277,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         google_play_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://play.google.com/store/search?q=pub%3AJSLA&c=apps"));
                 startActivity(intent);
             }
@@ -300,18 +284,24 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         rate_app_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
                 startActivity(intent);
             }
         });
 
-        donate_dev_btn.setOnClickListener(new View.OnClickListener() {
+        contactUsWhatsapp_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("https://www.paypal.com/paypalme/JSLAdeveloper?locale.x=ar_EG&fbclid=IwAR0eTfjrsCkRnBiGSE0NqD21wcnKaEQwM0FhZf6U3i1kEzf7H5B89_M3Nps"));
-                startActivity(intent);
+                try {
+                    String phoneNumberWithCountryCode = "+9627054320";
+                    String message = "مرحبا، هل يمكنني الحصول على مساعدة؟";
+
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("https://api.whatsapp.com/send?phone=%s&text=%s", phoneNumberWithCountryCode, message))));
+
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "WhatsApp not Installed", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -323,14 +313,14 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
 
                 counter_txt_view.setText("" + ++counter);
 
-                if (counter % 10 == 0){
+                if (counter % 33 == 0){
 
                     theker_text_view.animate().scaleX(0.9f).scaleY(0.9f).setDuration(500).withEndAction(new Runnable() {
                         @Override
                         public void run() {
                             Random random = new Random();
 
-                            switch (random.nextInt(7)){
+                            switch (random.nextInt(8)){
                                 case 1 : theker_text_view.setText("سبحان الله");
                                     break;
 
@@ -346,7 +336,10 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                                 case 5 : theker_text_view.setText("لا حول ولا قوة إلا بالله");
                                     break;
 
-                                case 6 : theker_text_view.setText("اللهم صل وسلم على سيدنا محمد");
+                                case 6 : theker_text_view.setText("اللهم صل على نبيّنا محمد");
+                                    break;
+
+                                case 7 : theker_text_view.setText("أستغفر الله وأتوب إليه");
                                     break;
 
                             }
@@ -370,8 +363,9 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         initialize_ads();
         setArabicFont();
         setSettings();
-
+        getIntents();
     }
+
 
     private void setArabicFont() {
         FontChangeCrawler fontChanger = new FontChangeCrawler(getAssets(), "Neo-Sans-Arabic-Regular.ttf");
@@ -379,28 +373,31 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
     }
 
     private void initialize_ads(){
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
 
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        AdsManager adsManager = new AdsManager(getApplicationContext());
 
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                super.onAdFailedToLoad(loadAdError);
+        int numberOfAdsRequests = 4, numberOfInterstitialAd = 3;
+        AdRequest[] adRequest = new AdRequest[numberOfAdsRequests];
+        mInterstitialAd = new InterstitialAd[numberOfInterstitialAd];
 
-                Toast.makeText(MainActivity.this,loadAdError.getCode() + "",Toast.LENGTH_SHORT).show();
-            }
+        for (int i = 0; i < numberOfAdsRequests; i++){
 
-            @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-            }
-        });
+            adRequest[i] = adsManager.getAdRequest();
+        }
+
+        mAdView.loadAd(adRequest[0]);
+
+
+        InterstitialAd.load(this,"ca-app-pub-2373057914394698/4855127546", adRequest[1],
+                adsManager.getInterstitialAdLoadCallback(0,mInterstitialAd));
+
+
+        InterstitialAd.load(this,"ca-app-pub-2373057914394698/1140572801", adRequest[2],
+
+                adsManager.getInterstitialAdLoadCallback(1,mInterstitialAd));
+
+        InterstitialAd.load(this,"ca-app-pub-2373057914394698/2849012660", adRequest[3],
+                adsManager.getInterstitialAdLoadCallback(2,mInterstitialAd));
     }
 
     private void setSettings(){
@@ -787,10 +784,34 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         impressionsLevelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                impressionsLevel = position;
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("impressionsLevel", impressionsLevel);
-                editor.apply();
+                if (showMasbaha){
+                    impressionsLevel = position;
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt("impressionsLevel", impressionsLevel);
+                    editor.apply();
+                    showMasbahaSwitch.setChecked(false);
+                    showMasbahaSwitch.setChecked(true);
+                } else {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage("لتتمكن من تحديد مستوى ظهور المسبحة الرجاء تفعيل خيار إظهار المسبحة اولا")
+                            .setTitle("المسبحة غير مفعلة!");
+
+                    builder.setCancelable(true)
+                            .setPositiveButton("تفعيل", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    showMasbahaSwitch.setChecked(true);
+                                }
+                            })
+                            .setNegativeButton("لاحقا", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
             }
 
             @Override
@@ -801,7 +822,6 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -827,7 +847,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             }
 
 
-            allowFloatingServiceCv.setVisibility(View.GONE);
+            allowFloatingServiceLl.setVisibility(View.GONE);
         } else {
 
             if (requestCode == 1237) {
@@ -918,7 +938,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         }
 
         long interval = 24 * 60 * 60 * 1000 ;
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), interval, pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),interval, pendingIntent);
     }
 
     private void startAlarm(Calendar calendar,int level) {
@@ -937,10 +957,11 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
            interval = (24 * 60 * 60 * 1000) / 20;
         } else if (level == 1) {
             interval = (24 * 60 * 60 * 1000) / 12;
-        } else
+        } else {
             interval = (24 * 60 * 60 * 1000) / 6;
+        }
 
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), interval, pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), interval,pendingIntent);
     }
 
     private void cancelAlarm(int request) {
@@ -957,6 +978,78 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, request, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.cancel(pendingIntent);
+    }
+
+    private void loadInterstitialAd(int adNum){
+
+        if(mInterstitialAd[adNum] == null)
+            return;
+
+        if(!canShowAds && adNum == 0) {
+            return;
+        }
+
+        mInterstitialAd[adNum].show(MainActivity.this);
+        mInterstitialAd[adNum].setFullScreenContentCallback(new FullScreenContentCallback() {
+
+            @Override
+            public void onAdShowedFullScreenContent() {
+
+                AdRequest adRequest = new AdRequest.Builder().build();
+                InterstitialAd.load(getApplicationContext(),"ca-app-pub-2373057914394698/4855127546", adRequest,
+                        new InterstitialAdLoadCallback() {
+
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        // The mInterstitialAd reference will be null until
+                        // an ad is loaded.
+                        mInterstitialAd[adNum] = interstitialAd;
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error
+                        mInterstitialAd[adNum] = null;
+                    }
+                });
+            }
+
+        });
+
+        canShowAds = false;
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                canShowAds = true;
+            }
+        },15000);
+
+    }
+
+    private void getIntents(){
+
+        boolean isToMasbaha = getIntent().getBooleanExtra("isToMasbaha",false);
+
+        if(isToMasbaha){
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(getResources().getColor(R.color.purple_500));
+            }
+
+            main_act.setVisibility(View.GONE);
+            masbaha_act.setVisibility(View.VISIBLE);
+            more_act.setVisibility(View.GONE);
+            setting_act.setVisibility(View.GONE);
+        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadInterstitialAd(0);
+            }
+        },3000);
     }
 
 }

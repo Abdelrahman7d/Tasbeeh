@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -16,6 +17,8 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
 import java.util.ArrayList;
 
@@ -25,6 +28,8 @@ public class Athkar_Al_Salaah extends AppCompatActivity {
     private ArrayList<Theker> athkar;
     private AdView mAdView;
     private athkar_al_salaah_adapter.OnCountBtnClickListener onCountBtnClickListener;
+    private InterstitialAd mInterstitialAd;
+    private AppOpenManager appOpenManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +38,10 @@ public class Athkar_Al_Salaah extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recycleView);
         mAdView = findViewById(R.id.adView);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            appOpenManager = new AppOpenManager(this);
+        }
 
         onCountBtnClickListener = new athkar_al_salaah_adapter.OnCountBtnClickListener() {
             @Override
@@ -68,13 +77,12 @@ public class Athkar_Al_Salaah extends AppCompatActivity {
                 "قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ، مِن شَرِّ مَا خَلَقَ، وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ، وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِى ٱلْعُقَدِ، وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ.\n" +
                 "بِسْمِ اللهِ الرَّحْمنِ الرَّحِيم\n" +
                 "قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ، مَلِكِ ٱلنَّاسِ، إِلَٰهِ ٱلنَّاسِ، مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ، ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ، مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ.\n" +
-                "ثلاث مرات بعد صلاتي الفجر والمغرب. ومرة بعد الصلوات الأخرى.",3));
+                " مرة بعد كل صلاة.",3));
         athkar.add(new Theker("لا إلهَ إلاّ اللّهُ وحْـدَهُ لا شريكَ لهُ، لهُ المُلكُ ولهُ الحَمْد، يُحيـي وَيُمـيتُ وهُوَ على كُلّ شيءٍ قدير." +
-                "عَشْر مَرّات بَعْدَ المَغْرِب وَالصّـبْح.\n ",10));
+                "عَشْر مَرّات بَعْدَ المَغْرِب وَالصّـبْح.\n ",10));// فيه خلاف وعادي لو ظل
         athkar.add(new Theker("اللّهُـمَّ إِنِّـي أَسْأَلُـكَ عِلْمـاً نافِعـاً وَرِزْقـاً طَيِّـباً ، وَعَمَـلاً مُتَقَـبَّلاً. \n" +
                 "بَعْد السّلامِ من صَلاةِ الفَجْر.",1));
-        athkar.add(new Theker("اللَّهُمَّ أَجِرْنِي مِنْ النَّار. \n" +
-                "بعد صلاة الصبح والمغرب.",7));
+
         athkar.add(new Theker("اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ. ",1));
 
         athkar_al_salaah_adapter athkarAlSalaahAdapter = new athkar_al_salaah_adapter(athkar, Athkar_Al_Salaah.this,onCountBtnClickListener);
@@ -97,7 +105,6 @@ public class Athkar_Al_Salaah extends AppCompatActivity {
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
 
-                Toast.makeText(Athkar_Al_Salaah.this, loadAdError.getCode() + "", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -105,10 +112,35 @@ public class Athkar_Al_Salaah extends AppCompatActivity {
                 super.onAdLoaded();
             }
         });
+
+        AdRequest adRequest1 = new AdRequest.Builder().build();
+        InterstitialAd.load(this,"ca-app-pub-2373057914394698/3124911770", adRequest1,
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        // The mInterstitialAd reference will be null until
+                        // an ad is loaded.
+                        mInterstitialAd = interstitialAd;
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error
+                        mInterstitialAd = null;
+                    }
+                });
     }
 
     private void setArabicFont() {
         FontChangeCrawler fontChanger = new FontChangeCrawler(getAssets(), "Neo-Sans-Arabic-Regular.ttf");
         fontChanger.replaceFonts((ViewGroup) this.findViewById(android.R.id.content));
     }
+
+    private void loadInterstitialAd(int adNum){
+
+        if (mInterstitialAd != null && adNum == 1) {
+            mInterstitialAd.show(Athkar_Al_Salaah.this);
+        }
+    }
+
 }

@@ -89,6 +89,7 @@ public class MasbahaFloatingService extends Service {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE ,
                 PixelFormat.TRANSLUCENT
         );
+
         finishAthkarParams.gravity = Gravity.BOTTOM | Gravity.CENTER;
         finishAthkarParams.y = (int) (mWindowManager.getDefaultDisplay().getHeight() * 0.07);
         mWindowManager.addView(finishAthkarTxt,finishAthkarParams);
@@ -171,7 +172,7 @@ public class MasbahaFloatingService extends Service {
                         params.x = initialX + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
 
-                        if (params.y > finishAthkarParams.y / 0.125) {
+                        if (params.y > finishAthkarParams.y / 0.116) {
                             finishAthkarTxt.setBackgroundColor(Color.parseColor("#93FF0000"));
                             mFloatingView.setAlpha(0.7f);
                         } else {
@@ -194,14 +195,14 @@ public class MasbahaFloatingService extends Service {
 
                 counter_txt_view.setText("" + ++counter);
 
-                if (counter % 10 == 0){
+                if (counter % 33 == 0){
 
                     theker_text_view.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).withEndAction(new Runnable() {
                         @Override
                         public void run() {
                             Random random = new Random();
 
-                            switch (random.nextInt(7)){
+                            switch (random.nextInt(8)){
                                 case 1 : theker_text_view.setText("سبحان الله");
                                     break;
 
@@ -217,7 +218,10 @@ public class MasbahaFloatingService extends Service {
                                 case 5 : theker_text_view.setText("لا حول ولا قوة إلا بالله");
                                     break;
 
-                                case 6 : theker_text_view.setText("اللهم صل وسلم على سيدنا محمد");
+                                case 6 : theker_text_view.setText("اللهم صل على نبيّنا محمد");
+                                    break;
+
+                                case 7 : theker_text_view.setText("أستغفر الله وأتوب إليه");
                                     break;
 
                             }
@@ -263,6 +267,7 @@ public class MasbahaFloatingService extends Service {
             startForeground(2, notification);
         }
     }
+
     private void setArabicFont() {
         FontChangeCrawler fontChanger = new FontChangeCrawler(getAssets(), "Neo-Sans-Arabic-Regular.ttf");
         fontChanger.replaceFonts((ViewGroup) mFloatingView);

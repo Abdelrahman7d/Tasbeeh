@@ -35,7 +35,7 @@
         <TextView
             android:id="@+id/athkar_al_sabaah_txt"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="60dp"
             android:layout_marginHorizontal="35dp"
             android:background="@drawable/rounded_nav"
             android:backgroundTint="#74B2E4"
@@ -43,7 +43,7 @@
             android:gravity="center"
             android:text="أذكار الصباح"
             android:textColor="@color/white"
-            android:textSize="20dp" />
+            android:textSize="23dp" />
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/theker_alsabaah_float_recycler_view"
@@ -53,18 +53,6 @@
             android:layout_marginTop="20dp"
             android:layoutAnimation="@anim/animation" />
 
-        <com.google.android.gms.ads.AdView
-            android:id="@+id/adView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="0dp"
-            app:adSize="BANNER"
-            app:adUnitId="ca-app-pub-2373057914394698/3718599291"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
 
     </LinearLayout>
 

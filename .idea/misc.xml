@@ -35,17 +35,22 @@
         <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/activity_athkar_al_noom.xml" value="0.1734375" />
         <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/activity_athkar_al_sabaah.xml" value="0.1734375" />
         <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/activity_athkar_al_salaah.xml" value="0.1539855072463768" />
-        <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/activity_main.xml" value="0.14" />
+        <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/activity_final_athkar.xml" value="0.22" />
+        <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/activity_masbaha.xml" value="0.16" />
+        <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/activity_splash.xml" value="0.18" />
+        <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/activity_total_athkar.xml" value="0.18" />
         <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/athkar_al_masaa_bubble_card_view.xml" value="0.33" />
         <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/athkar_al_sabaah_bubble_card_view.xml" value="0.1734375" />
-        <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/floating_masbaha.xml" value="0.33" />
+        <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/floating_masbaha.xml" value="0.18" />
         <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/theker_alsabaah_float_service.xml" value="0.33" />
         <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/theker_holder.xml" value="0.11820652173913043" />
         <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/theker_masaa_float_holder.xml" value="0.16" />
         <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/theker_masaa_float_service.xml" value="0.25" />
         <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/theker_masaa_holder.xml" value="0.16927083333333334" />
-        <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/theker_sabaah_float_holder.xml" value="0.48105436573311366" />
+        <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/theker_sabaah_float_holder.xml" value="0.22" />
+        <entry key="..\:/Android/Tasbeeh/app/src/main/res/layout/theker_sabaah_holder.xml" value="0.1331521739130435" />
+        <entry key="..\:/Android/Tasbeeh/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.12604166666666666" />
       </map>
     </option>
   </component>

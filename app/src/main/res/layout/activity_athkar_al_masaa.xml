@@ -29,6 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layoutAnimation="@anim/animation"
+        android:clipToPadding="false"
         android:paddingVertical="80dp"
         app:layout_constraintBottom_toBottomOf="@+id/adView"
         app:layout_constraintTop_toTopOf="@+id/textView"

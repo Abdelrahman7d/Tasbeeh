@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tasbeeh</string>
+    <string name="app_name">تسبيح</string>
 
 
     <string-array name="numbers_array">
@@ -14,7 +14,7 @@
         <item>9</item>
         <item>10</item>
     </string-array>
-    
+
     <string-array name="impression_level">
         <item>عالي</item>
         <item>متوسط</item>

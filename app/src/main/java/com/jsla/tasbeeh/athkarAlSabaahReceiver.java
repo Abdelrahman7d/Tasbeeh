@@ -48,12 +48,12 @@ public class athkarAlSabaahReceiver extends BroadcastReceiver {
 //                    0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             Notification notification = new NotificationCompat.Builder(context.getApplicationContext(), CHANNEL_1_ID)
-                    .setSmallIcon(R.drawable.ic_home)
+                    .setSmallIcon(R.drawable.empty_app_icon)
                     .setContentTitle(title)
                     .setContentText(message)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                    .setColor(Color.RED)
+                    .setColor(Color.parseColor("#936ED3"))
                     .setContentIntent(contentIntent)
                     .setAutoCancel(true)
                     .setSilent(false)

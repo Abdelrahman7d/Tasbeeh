@@ -9,10 +9,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#F8F8F8</color>
+    <color name="dark_grey">#737373</color>
     <color name="light_blue">#7FC3F9</color>
     <color name="light_green">#78A67A</color>
     <color name="nav">#CCCCCC</color>
-    <color name="test">#858585</color>
+    <color name="test">#07898484</color>
 
 
 </resources>

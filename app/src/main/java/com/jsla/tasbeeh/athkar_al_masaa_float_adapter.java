@@ -29,6 +29,7 @@ public class athkar_al_masaa_float_adapter extends RecyclerView.Adapter<athkar_a
 
     interface OnCountBtnClickListener {
         void onDeleteItem(athkar_al_masaa_float_adapter athkarAlMasaaFloatAdapter, int position);
+        void onBtnClicked();
     }
 
     public athkar_al_masaa_float_adapter(ArrayList<Theker> athkar, Context context, OnCountBtnClickListener countBtnClickListener, boolean isItMasaa) {
@@ -81,6 +82,7 @@ public class athkar_al_masaa_float_adapter extends RecyclerView.Adapter<athkar_a
                             if(athkar.get(getAdapterPosition()).getCounter() == 0) {
                                 if (countBtnClickListener != null){
                                     countBtnClickListener.onDeleteItem(athkar_al_masaa_float_adapter.this,getAdapterPosition());
+                                    countBtnClickListener.onBtnClicked();
                                 }
                             }
                         }
